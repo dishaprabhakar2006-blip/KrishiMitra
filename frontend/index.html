@@ -1,0 +1,2275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiMitra - AI-Powered Farming Assistant</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --primary-light: #81C784;
+            --accent: #FFD700;
+            --accent-glow: rgba(255, 215, 0, 0.4);
+            --bg-gradient: linear-gradient(135deg, #0e2213 0%, #171d15 100%);
+            --glass-bg: rgba(25, 45, 28, 0.45);
+            --glass-border: rgba(255, 215, 0, 0.12);
+            --glass-border-hover: rgba(255, 215, 0, 0.25);
+            --text-light: #f5f7f6;
+            --text-muted: #aab4ae;
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --sidebar-width: 320px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            cursor: default;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-light);
+            background: #0d160f;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+
+        /* Ambient Cursor Glow */
+        #cursor-glow {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(76, 175, 80, 0.35) 0%, rgba(255, 215, 0, 0.12) 65%, rgba(0, 0, 0, 0) 100%);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+            filter: blur(1px);
+            transition: width 0.3s ease, height 0.3s ease;
+        }
+
+        /* Particle Canvas Background */
+        #bg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Landing Page Styles */
+        .landing-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .landing-container.fade-out {
+            opacity: 0;
+            transform: scale(1.05);
+            pointer-events: none;
+        }
+
+        .parallax-bg {
+            position: absolute;
+            top: -5%;
+            left: -5%;
+            width: 110%;
+            height: 110%;
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+            transition: transform 0.1s ease-out;
+            will-change: transform;
+        }
+
+        .landing-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(14, 30, 18, 0.15) 0%, rgba(13, 22, 15, 0.9) 85%);
+            z-index: 1;
+        }
+
+        .landing-card {
+            position: relative;
+            z-index: 2;
+            width: 90%;
+            max-width: 460px;
+            padding: 36px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+            background: rgba(14, 28, 18, 0.88); /* Premium dark forest glass */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 18px;
+            color: #ffffff; /* White text for contrast */
+        }
+
+        .landing-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 5px;
+        }
+
+        .landing-logo .logo-icon {
+            font-size: 38px;
+            color: #81c784; /* Soft bright green */
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.4);
+        }
+
+        .landing-logo-text {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(to right, #ffffff, #81c784);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .landing-title {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 700;
+            color: #e8f5e9; /* Light green-white */
+        }
+
+        .landing-subtitle {
+            font-size: 14px;
+            color: #a5d6a7; /* Light sage green labels */
+            line-height: 1.5;
+        }
+
+        .landing-lang-switcher {
+            display: flex;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 4px;
+            border-radius: 8px;
+            align-self: center;
+            margin-bottom: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .landing-lang-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: #cfd8dc;
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .landing-lang-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+        }
+
+        /* Specific light overrides for inputs inside light card */
+        .landing-card .form-label {
+            color: #a5d6a7; /* Light sage green name/location label */
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .landing-card .form-input {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-size: 15px;
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+
+        .landing-card .form-input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.15);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+
+        .landing-card .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        /* Main Dashboard Layout */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+            z-index: 2;
+            opacity: 0;
+            transform: scale(0.97);
+            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+
+        .app-container.visible {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        /* Glassmorphism Styles */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: border 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border: 1px solid var(--glass-border-hover);
+        }
+
+        /* Sidebar - Farmer Profile */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100%;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            border-right: 1px solid var(--glass-border);
+            background: rgba(14, 30, 18, 0.6);
+            backdrop-filter: blur(20px);
+            z-index: 3;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .logo-icon {
+            font-size: 28px;
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            background: linear-gradient(to right, #ffffff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* New Chat Button */
+        .btn-new-chat {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            color: white;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.25);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 12px;
+        }
+        
+        .btn-new-chat:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(76, 175, 80, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .language-switcher {
+            display: flex;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .lang-btn {
+            flex: 1;
+            padding: 6px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+        }
+
+        /* Sidebar Tabs Navigation */
+        .sidebar-tabs-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 10px;
+        }
+
+        .sidebar-tab {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            font-family: var(--font-display);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-tab:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 215, 0, 0.15);
+            transform: translateX(4px);
+        }
+
+        .sidebar-tab.active {
+            background: var(--primary);
+            border-color: var(--primary-light);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .sidebar-tab.active .tab-icon {
+            transform: scale(1.1);
+        }
+
+        .tab-icon {
+            font-size: 15px;
+            transition: transform 0.2s ease;
+        }
+
+        .tab-label {
+            flex-grow: 1;
+        }
+
+        /* Conversation History list section */
+        .history-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 10px;
+        }
+
+        .history-section::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .history-section::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .history-item {
+            padding: 8px 10px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 12px;
+            text-align: left;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 215, 0, 0.15);
+        }
+
+        .history-item-title {
+            font-weight: 600;
+            color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-item-meta {
+            font-size: 9px;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-empty {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 6px;
+            font-style: italic;
+        }
+
+        .profile-section {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .profile-section::-webkit-scrollbar {
+            width: 4px;
+        }
+        .profile-section::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .profile-title {
+            font-family: var(--font-display);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .profile-details {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .info-group {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 1px;
+        }
+
+        .info-value {
+            font-family: var(--font-display);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .crop-badge {
+            display: inline-block;
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid var(--primary);
+            color: var(--primary-light);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 11px;
+            margin: 4px 4px 0 0;
+        }
+
+        .btn-edit-profile {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--primary);
+            background: transparent;
+            color: var(--primary-light);
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            margin-top: 2px;
+        }
+
+        .btn-edit-profile:hover {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+        }
+
+        /* Chat Window Area */
+        .chat-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            height: 100%;
+            position: relative;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 16px;
+        }
+
+        .chat-header-title h1 {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .chat-header-title p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Chat Messages Stream */
+        .messages-stream {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-right: 8px;
+            margin-bottom: 16px;
+        }
+
+        /* Custom Scrollbar for Messages */
+        .messages-stream::-webkit-scrollbar {
+            width: 6px;
+        }
+        .messages-stream::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .messages-stream::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+        }
+        .messages-stream::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .message-row {
+            display: flex;
+            gap: 12px;
+            max-width: 85%;
+        }
+
+        .message-row.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-row.agent {
+            align-self: flex-start;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .message-row.user .avatar {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: var(--primary);
+            color: var(--primary-light);
+        }
+
+        .message-row.agent .avatar {
+            background: rgba(255, 215, 0, 0.15);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .message-bubble {
+            padding: 14px 16px;
+            border-radius: 16px;
+            line-height: 1.6;
+            font-size: 14px;
+            font-family: var(--font-body);
+        }
+
+        .message-bubble p {
+            margin-top: 0;
+            margin-bottom: 4px;
+        }
+
+        .message-bubble p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message-row.user .message-bubble {
+            background: rgba(76, 175, 80, 0.25);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-top-right-radius: 4px;
+            color: #ffffff;
+        }
+
+        .message-row.agent .message-bubble {
+            background: rgba(25, 45, 28, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top-left-radius: 4px;
+            color: #e8edea;
+        }
+
+        .agent-name {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 6px;
+            font-family: var(--font-display);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Message image/video preview thumbnail */
+        .message-image {
+            max-width: 320px;
+            max-height: 240px;
+            border-radius: 12px;
+            margin-top: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            display: block;
+        }
+
+        /* Markdown tables in bubble */
+        .message-bubble table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 13px;
+        }
+
+        .message-bubble th, .message-bubble td {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        .message-bubble th {
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .message-bubble tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Heading styles in chat bubbles */
+        .message-bubble h1, .message-bubble h2, .message-bubble h3, .message-bubble h4 {
+            font-family: var(--font-display);
+            color: var(--accent);
+            margin: 14px 0 6px 0;
+            font-weight: 600;
+        }
+        .message-bubble h1 { font-size: 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 4px; }
+        .message-bubble h2 { font-size: 16px; }
+        .message-bubble h3 { font-size: 14px; }
+        .message-bubble h4 { font-size: 13px; font-weight: 700; }
+
+        .message-bubble hr {
+            border: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 12px 0;
+        }
+
+        /* List styles in chat bubbles */
+        .message-bubble li {
+            margin-left: 18px;
+            margin-bottom: 4px;
+            list-style-type: disc;
+        }
+        .message-bubble ul {
+            margin-bottom: 10px;
+            padding-left: 5px;
+        }
+        
+        /* Microphone recording animation */
+        #btn-voice.recording {
+            color: #ff5252;
+            animation: pulse-recording 1.5s infinite;
+        }
+        @keyframes pulse-recording {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .voice-error {
+            background: rgba(255, 82, 82, 0.12);
+            border: 1px solid rgba(255, 82, 82, 0.25);
+            color: #ff8a80;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 8px;
+            text-align: center;
+            font-weight: 500;
+            font-family: var(--font-display);
+            animation: pulse-recording 2s infinite ease-in-out;
+        }
+
+        /* Input Controls Bar */
+        .input-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .image-preview-container {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 8px 12px;
+            border-radius: 12px;
+            border: 1px dashed rgba(255, 215, 0, 0.25);
+            max-width: fit-content;
+        }
+
+        .preview-img {
+            height: 40px;
+            width: 40px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .preview-text {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .btn-remove-preview {
+            background: transparent;
+            border: none;
+            color: #ff5252;
+            cursor: pointer;
+            padding: 4px;
+            font-size: 14px;
+        }
+
+        .input-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            background: rgba(14, 30, 18, 0.7);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .input-bar:focus-within {
+            border-color: var(--primary-light);
+        }
+
+        .btn-attachment {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-attachment:hover {
+            color: var(--accent);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .chat-input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: white;
+            font-size: 16px;
+            font-family: var(--font-body);
+            padding: 8px 0;
+            resize: none;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .chat-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-send {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-send:hover {
+            background: #66bb6a;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Profile Editing Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 450px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: left;
+        }
+
+        .form-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .form-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: white;
+            font-size: 15px;
+            font-family: var(--font-body);
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary-light);
+        }
+
+        .form-submit {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .form-submit:hover {
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+            background: #66bb6a;
+        }
+
+        /* Typing Dots Animation */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+            align-items: center;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+
+        /* Typing Effect for final responses */
+        .typing-text {
+            border-right: 2px solid transparent;
+            white-space: pre-wrap;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--glass-border);
+            }
+            .chat-container {
+                height: calc(100vh - 340px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mouse tracker spotlight glow -->
+    <div id="cursor-glow"></div>
+
+    <!-- Canvas background for flowing fields effect -->
+    <canvas id="bg-canvas"></canvas>
+    
+    <!-- Landing / Login Page -->
+    <div class="landing-container" id="landing-page">
+        <!-- Parallax Farmer Background -->
+        <div class="parallax-bg" id="parallax-bg" style="background-image: url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=1920&auto=format&fit=crop');"></div>
+        <div class="landing-overlay"></div>
+        
+        <div class="landing-card glass-card">
+            <div class="landing-lang-switcher">
+                <button class="landing-lang-btn active" onclick="setLanguage('english')">English</button>
+                <button class="landing-lang-btn" onclick="setLanguage('hindi')">हिन्दी</button>
+                <button class="landing-lang-btn" onclick="setLanguage('kannada')">ಕನ್ನಡ</button>
+            </div>
+            
+            <div class="landing-logo">
+                <i class="fa-solid fa-wheat-awn logo-icon"></i>
+                <span class="landing-logo-text">KrishiMitra</span>
+            </div>
+            
+            <h2 class="landing-title" id="lbl-landing-title">Your AI Farming Companion</h2>
+            <p class="landing-subtitle" id="lbl-landing-subtitle">Get personalized crop, weather, disease, and mandi advisories in your language.</p>
+            
+            <form id="login-form" onsubmit="handleLoginSubmit(event)">
+                <div class="form-group">
+                    <label class="form-label" id="lbl-login-name">Your Name</label>
+                    <input type="text" class="form-input" id="login-name-input" placeholder="Enter name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" id="lbl-login-loc">Location (City, State)</label>
+                    <input type="text" class="form-input" id="login-loc-input" placeholder="Enter location (e.g. Pune, Maharashtra)" required>
+                </div>
+                <button type="submit" class="form-submit" id="btn-login-submit">Enter KrishiMitra</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dashboard container -->
+    <div class="app-container" id="app-dashboard">
+        
+        <!-- Sidebar: Farmer profile summary, navigation tabs and history -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <i class="fa-solid fa-wheat-awn logo-icon"></i>
+                <span class="logo-text">KrishiMitra</span>
+            </div>
+            
+            <!-- New Chat Button -->
+            <button class="btn-new-chat" onclick="startNewChat()">
+                <i class="fa-solid fa-plus"></i> New Chat
+            </button>
+            
+            <div class="language-switcher">
+                <button class="lang-btn active" onclick="setLanguage('english')">English</button>
+                <button class="lang-btn" onclick="setLanguage('hindi')">हिन्दी</button>
+                <button class="lang-btn" onclick="setLanguage('kannada')">ಕನ್ನಡ</button>
+            </div>
+            
+            <!-- Sidebar Navigation Tabs -->
+            <div class="sidebar-tabs-container">
+                <div class="sidebar-tab active" onclick="switchTab('weather')" id="tab-weather">
+                    <span class="tab-icon">🌤️</span> 
+                    <span class="tab-label" id="lbl-tab-weather">Weather & Irrigation</span>
+                </div>
+                <div class="sidebar-tab" onclick="switchTab('mandi')" id="tab-mandi">
+                    <span class="tab-icon">🏪</span> 
+                    <span class="tab-label" id="lbl-tab-mandi">Mandi Prices</span>
+                </div>
+                <div class="sidebar-tab" onclick="switchTab('disease')" id="tab-disease">
+                    <span class="tab-icon">🌿</span> 
+                    <span class="tab-label" id="lbl-tab-disease">Crop Disease</span>
+                </div>
+                <div class="sidebar-tab" onclick="switchTab('general')" id="tab-general">
+                    <span class="tab-icon">💬</span> 
+                    <span class="tab-label" id="lbl-tab-general">General Chat</span>
+                </div>
+            </div>
+
+            <!-- Saved Conversations History list -->
+            <div class="history-section">
+                <h3 class="profile-title" id="lbl-history-title">Saved Chats</h3>
+                <div class="history-list" id="chat-history-list">
+                    <!-- History items load here dynamically -->
+                </div>
+            </div>
+            
+            <div class="profile-section">
+                <h3 class="profile-title" id="lbl-profile-details">Farmer Details</h3>
+                
+                <div class="profile-details">
+                    <div class="info-group">
+                        <div class="info-label" id="lbl-farmer-name">Farmer Name</div>
+                        <div class="info-value" id="val-farmer-name">Loading...</div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <div class="info-label" id="lbl-farmer-loc">Location</div>
+                        <div class="info-value" id="val-farmer-loc">Loading...</div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <div class="info-label" id="lbl-farmer-land">Land Size</div>
+                        <div class="info-value" id="val-farmer-land">Loading...</div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <div class="info-label" id="lbl-farmer-crops">Crop History</div>
+                        <div class="info-value" id="val-farmer-crops">Loading...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn-edit-profile" onclick="openProfileModal()" id="btn-edit-profile-text">
+                <i class="fa-solid fa-user-pen"></i> Edit Profile
+            </button>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-container">
+            <header class="chat-header">
+                <div class="chat-header-title">
+                    <h1 id="lbl-welcome">KrishiMitra AI Assistant</h1>
+                    <p id="lbl-subwelcome">Multi-Agent Farm Advisory Network (Gemini 3.5)</p>
+                </div>
+                <div class="chat-status">
+                    <span class="crop-badge"><i class="fa-solid fa-shield-halved"></i> Google ADK Mode</span>
+                </div>
+            </header>
+            
+            <!-- Messages stream -->
+            <section class="messages-stream" id="chat-messages">
+                <!-- Messages will load here dynamically -->
+            </section>
+            
+            <!-- Input area panel -->
+            <footer class="input-panel">
+                <div class="voice-error" id="voice-error-box" style="display: none;"></div>
+                
+                <div class="input-bar glass-card">
+                    <button class="btn-attachment" id="btn-voice" onclick="toggleVoiceInput()" title="Voice input (Speak)">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
+                    
+                    <input type="text" class="chat-input" id="user-input-box" placeholder="Ask about weather, sowing, crop disease, mandi prices, or subsidies..." onkeydown="handleInputKeyDown(event)">
+                    
+                    <button class="btn-send" onclick="sendUserMessage()" title="Send query">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </footer>
+        </main>
+        
+    </div>
+
+    <!-- Edit Profile Modal Overlay -->
+    <div class="modal-overlay" id="profile-modal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h3 class="modal-title" id="lbl-edit-title">Edit Farmer Profile</h3>
+                <button class="modal-close" onclick="closeProfileModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" id="lbl-form-name">Name</label>
+                <input type="text" class="form-input" id="form-name-input" placeholder="Ramesh Kumar">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" id="lbl-form-loc">Location (City, State)</label>
+                <input type="text" class="form-input" id="form-loc-input" placeholder="Karnal, Haryana">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" id="lbl-form-land">Land Size (Acres)</label>
+                <input type="number" step="0.1" class="form-input" id="form-land-input" placeholder="5">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" id="lbl-form-crops">Crop History (comma separated)</label>
+                <input type="text" class="form-input" id="form-crops-input" placeholder="Wheat, Mustard, Cotton">
+            </div>
+            
+            <button class="form-submit" onclick="submitProfileDetails()" id="btn-save-profile-text">Save Details</button>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentLanguage = 'english';
+        let rootSessionId = "";
+        
+        // Multi-chat states (separate history for each tab)
+        let activeTab = 'weather';
+        const tabChats = {
+            weather: [],
+            mandi: [],
+            disease: [],
+            general: []
+        };
+        
+        // Saved chats storage array
+        let savedConversations = [];
+        
+        // Agent UI details mapping
+        const AGENT_META = {
+            "OrchestratorAgent": { name: "KrishiMitra", avatar: "👑", nameDisp: { english: "KrishiMitra Orchestrator", hindi: "कृषिमित्र मार्गदर्शक", kannada: "ಕೃಷಿಮಿತ್ರ ಸಂಯೋಜಕ" } },
+            "WeatherAgent": { name: "Mausam", avatar: "⛅", nameDisp: { english: "Mausam Weather Agent", hindi: "मौसम विशेषज्ञ", kannada: "ಹವಾಮಾನ ತಜ್ಞ" } },
+            "CropAdvisoryAgent": { name: "Sasyam", avatar: "🌱", nameDisp: { english: "Sasyam Crop Advisor", hindi: "फसल विशेषज्ञ", kannada: "ಬೆಳೆ ತಜ್ಞ" } },
+            "PestAndDiseaseAgent": { name: "Nidan", avatar: "🐛", nameDisp: { english: "Nidan Pest & Disease Agent", hindi: "कीट एवं रोग विशेषज्ञ", kannada: "ಕೀಟ ಮತ್ತು ರೋಗ ತಜ್ಞ" } },
+            "MarketPriceAgent": { name: "Mandi", avatar: "💰", nameDisp: { english: "Mandi Market Agent", hindi: "मंडी बाजार विशेषज्ञ", kannada: "ಮಾರುकट्टೆ ತಜ್ಞ" } },
+            "SchemeFinderAgent": { name: "Sarkari", avatar: "📜", nameDisp: { english: "Sarkari Scheme Finder", hindi: "सरकारी योजना मार्गदर्शक", kannada: "ಯೋಜನಾ ತಜ್ಞ" } },
+            "ProfitCalculatorAgent": { name: "Hisaab", avatar: "🧮", nameDisp: { english: "Hisaab Financial Calculator", hindi: "मुनाफा गणितज्ञ", kannada: "ಹಣಕಾಸು ಲೆಕ್ಕಿಗ" } },
+            "FarmerMemoryAgent": { name: "Smriti", avatar: "💾", nameDisp: { english: "Smriti Profile Manager", hindi: "स्मृति सहायक", kannada: "ಸ್ಮೃತಿ ವ್ಯವಸ್ಥಾಪಕ" } }
+        };
+
+        const LOCAL_UI_TEXTS = {
+            english: {
+                welcome: "KrishiMitra AI Assistant",
+                subwelcome: "Multi-Agent Farm Advisory Network (Gemini 3.5)",
+                lblProfile: "Farmer Details",
+                lblName: "Farmer Name",
+                lblLoc: "Location",
+                lblLand: "Land Size",
+                lblCrops: "Crop History",
+                btnEdit: "Edit Profile",
+                editTitle: "Edit Farmer Profile",
+                placeholderQuery: "Ask about weather, sowing, crop disease, mandi prices, or subsidies...",
+                saveDetails: "Save Details",
+                greeting: "Hello, I am KrishiMitra, your personal farming assistant. How can I help you today?",
+                landingTitle: "Your AI Farming Companion",
+                landingSubtitle: "Get personalized crop, weather, disease, and mandi advisories in your language.",
+                lblLoginName: "Your Name",
+                lblLoginLoc: "Location (City, State)",
+                btnLoginSubmit: "Enter KrishiMitra",
+                namePlaceholder: "Enter name",
+                locPlaceholder: "Enter location (e.g. Pune, Maharashtra)",
+                tabWeather: "Weather & Irrigation",
+                tabMandi: "Mandi Prices",
+                tabDisease: "Crop Disease",
+                tabGeneral: "General Chat",
+                savedChats: "Saved Chats"
+            },
+            hindi: {
+                welcome: "कृषिमित्र एआई सहायक",
+                subwelcome: "बहु-एजेंट कृषि सलाहकार नेटवर्क (जेमिनी ३.५)",
+                lblProfile: "किसान का विवरण",
+                lblName: "किसान का नाम",
+                lblLoc: "स्थान",
+                lblLand: "भूमि का आकार",
+                lblCrops: "फसल का इतिहास",
+                btnEdit: "प्रोफ़ाइल बदलें",
+                editTitle: "किसान प्रोफ़ाइल बदलें",
+                placeholderQuery: "मौसम, बुवाई, फसल रोग, मंडी भाव या सब्सिडी के बारे में पूछें...",
+                saveDetails: "विवरण सहेजें",
+                greeting: "नमस्कार, मैं कृषिमित्र हूँ, आपका निजी कृषि सहायक। आज मैं आपकी कैसे मदद कर सकता हूँ?",
+                landingTitle: "आपका एआई कृषि साथी",
+                landingSubtitle: "अपनी भाषा में व्यक्तिगत फसल, मौसम, रोग और मंडी सलाह प्राप्त करें।",
+                lblLoginName: "आपका नाम",
+                lblLoginLoc: "स्थान (शहर, राज्य)",
+                btnLoginSubmit: "कृषिमित्र में प्रवेश करें",
+                namePlaceholder: "नाम दर्ज करें",
+                locPlaceholder: "स्थान दर्ज करें (जैसे: पुणे, महाराष्ट्र)",
+                tabWeather: "मौसम और सिंचाई",
+                tabMandi: "मंडी भाव",
+                tabDisease: "फसल रोग निदान",
+                tabGeneral: "सामान्य चर्चा",
+                savedChats: "सहेजे गए चैट"
+            },
+            kannada: {
+                welcome: "ಕೃಷಿಮಿತ್ರ ಎಐ ಸಹಾಯಕಿ",
+                subwelcome: "ಬಹು-ಏಜೆಂಟ್ ಕೃಷಿ ಸಲಹಾ ಜಾಲ (ಜೆಮಿನಿ ೩.೫)",
+                lblProfile: "ರೈತರ ವಿವರಗಳು",
+                lblName: "ರೈತರ ಹೆಸರು",
+                lblLoc: "ಸ್ಥಳ",
+                lblLand: "ಭೂಮಿಯ ಗಾತ್ರ",
+                lblCrops: "ಬೆಳೆ ಇತಿಹಾಸ",
+                btnEdit: "ಪ್ರೊಫೈಲ್ ಸಂಪಾದಿಸಿ",
+                editTitle: "ರೈತರ ಪ್ರೊಫೈಲ್ ಸಂಪಾದಿಸಿ",
+                placeholderQuery: "ಹವಾಮಾನ, ಬಿತ್ತನೆ, ಬೆಳೆ ರೋಗ, ಮಾರುಕಟ್ಟೆ ಬೆಲೆ ಅಥವಾ ಸಬ್ಸಿಡಿ ಬಗ್ಗೆ ಕೇಳಿ...",
+                saveDetails: "ವಿವರಗಳನ್ನು ಉಳಿಸಿ",
+                greeting: "ನಮಸ್ಕಾರ, ನಾನು ಕೃಷಿಮಿತ್ರ, ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಕೃಷಿ ಸಹಾಯಕ. ಇಂದು ನಿಮಗೆ ನಾನು ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?",
+                landingTitle: "ನಿಮ್ಮ ಎಐ ಕೃಷಿ ಸಂಗಾತಿ",
+                landingSubtitle: "ನಿಮ್ಮದೇ ಭಾಷೆಯಲ್ಲಿ ವೈಯಕ್ತಿಕ ಬೆಳೆ, ಹವಾಮಾನ, ರೋಗ ಮತ್ತು ಮಾರುಕಟ್ಟೆ ಸಲಹೆಗಳನ್ನು ಪಡೆಯಿರಿ.",
+                lblLoginName: "ನಿಮ್ಮ ಹೆಸರು",
+                lblLoginLoc: "ಸ್ಥಳ (ನಗರ, ರಾಜ್ಯ)",
+                btnLoginSubmit: "ಕೃಷಿಮಿತ್ರ ಪ್ರವೇಶಿಸಿ",
+                namePlaceholder: "ಹೆಸರು ನಮೂದಿಸಿ",
+                locPlaceholder: "ಸ್ಥಳ ನಮೂದಿಸಿ (ಉದಾ: ಪುಣೆ, ಮಹಾರಾಷ್ಟ್ರ)",
+                tabWeather: "ಹವಾಮಾನ ಮತ್ತು ನೀರಾವರಿ",
+                tabMandi: "ಮಾರುಕಟ್ಟೆ ಬೆಲೆ",
+                tabDisease: "ಬೆಳೆ ರೋಗ ತಪಾಸಣೆ",
+                tabGeneral: "ಸಾಮಾನ್ಯ ಚರ್ಚೆ",
+                savedChats: "ಉಳಿಸಿದ ಚಾಟ್‌ಗಳು"
+            }
+        };
+
+        const TAB_GREETINGS = {
+            english: {
+                weather: "Hello! I am Mausam, your Weather & Irrigation Advisor. Ask me about upcoming rain, temperature, or recommendations on when to irrigate your crops based on your location.",
+                mandi: "Hello! I am Mandi, your Market Price & Profit Advisor. Ask me about live mandi rates for your crops, selling vs. holding advice, or yield profit calculations.",
+                disease: "Hello! I am Nidan, your Pest & Disease Advisor. Please describe your crop symptoms here (such as leaf color, spots, wilting, or pests) to receive a diagnosis and remedies.",
+                general: "Hello! I am KrishiMitra, your personal farming assistant. How can I help you today? You can ask me general farming questions, scheme recommendations, or fertilizer advisories."
+            },
+            hindi: {
+                weather: "नमस्कार! मैं मौसम हूँ, आपका मौसम और सिंचाई सलाहकार। मुझसे आने वाली बारिश, तापमान या अपने स्थान के आधार पर फसलों की सिंचाई के सही समय के बारे में पूछें।",
+                mandi: "नमस्कार! मैं मंडी हूँ, आपका बाजार भाव और मुनाफा सलाहकार। फसलों के ताजा मंडी भाव, उपज बेचने या रोक कर रखने की सलाह, या लाभ गणना के बारे में पूछें।",
+                disease: "नमस्कार! मैं निदान हूँ, आपका कीट और रोग सलाहकार। निदान और उपचार पाने के लिए कृपया यहाँ अपनी फसल के लक्षणों (जैसे पत्तों का रंग, धब्बे, मुरझाना या कीड़े) का वर्णन करें।",
+                general: "नमस्कार, मैं कृषिमित्र हूँ, आपका व्यक्तिगत कृषि सहायक। आज मैं आपकी क्या मदद कर सकता हूँ? आप मुझसे खेती, सरकारी योजनाओं, या उर्वरकों के बारे में कोई भी प्रश्न पूछ सकते हैं।"
+            },
+            kannada: {
+                weather: "ನಮಸ್ಕಾರ! ನಾನು ಹವಾಮಾನ, ನಿಮ್ಮ ಹವಾಮಾನ ಮತ್ತು ನೀರಾವರಿ ಸಲಹೆಗಾರ. ಮುಂಬರುವ ಮಳೆ, ತಾಪಮಾನ ಅಥವಾ ನಿಮ್ಮ ಸ್ಥಳದ ಆಧಾರದ ಮೇಲೆ ನೀರಾವರಿ ವೇಳಾಪಟ್ಟಿಯ ಬಗ್ಗೆ ನನ್ನನ್ನು ಕೇಳಿ.",
+                mandi: "ನಮಸ್ಕಾರ! ನಾನು ಮಂಡಿ, ನಿಮ್ಮ ಮಾರುಕಟ್ಟೆ ಬೆಲೆ ಮತ್ತು ಲಾಭ ಲೆಕ್ಕಾಚಾರದ ಸಲಹೆಗಾರ. ಬೆಳೆಗಳ ಮಾರುಕಟ್ಟೆ ದರಗಳು, ಮಾರಾಟ ಮಾಡುವ ಅಥವಾ ಕಾಯ್ದಿರಿಸುವ ಸಲಹೆ, ಅಥವಾ ಲಾಭದ ಅಂದಾಜಿನ ಬಗ್ಗೆ ಕೇಳಿ.",
+                disease: "ನಮಸ್ಕಾರ! ನಾನು ನಿದಾನ, ನಿಮ್ಮ ಕೀಟ ಮತ್ತು ರೋಗ ಸಲಹೆಗಾರ. ದಯವಿಟ್ಟು ಇಲ್ಲಿ ನಿಮ್ಮ ಬೆಳೆಯ ರೋಗದ ಲಕ್ಷಣಗಳನ್ನು ವಿವರಿಸಿ (ಉದಾಹರಣೆಗೆ ಎಲೆಗಳ ಬಣ್ಣ, ಕಲೆಗಳು, ಒಣಗುವುದು ಅಥವಾ ಕೀಟಗಳು) ಮತ್ತು ಪರಿಹಾರಗಳನ್ನು ಪಡೆಯಿರಿ.",
+                general: "ನಮಸ್ಕಾರ, ನಾನು ಕೃಷಿಮಿತ್ರ, ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಕೃಷಿ ಸಹಾಯಕ. ಇಂದು ನಿಮಗೆ ನಾನು ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ? ಕೃಷಿ ಪದ್ಧತಿಗಳು, ಯೋಜನೆಗಳು ಅಥವಾ ರಸಗೊಬ್ಬರಗಳ ಬಗ್ಗೆ ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಿ."
+            }
+        };
+
+        const PROFILE_UPDATE_MSG = {
+            english: "Farmer profile updated successfully in my memory database!",
+            hindi: "किसान प्रोफ़ाइल को मेरे मेमोरी डेटाबेस में सफलतापूर्वक सहेज लिया गया है!",
+            kannada: "ರೈತರ ಪ್ರೊಫೈಲ್ ಅನ್ನು ನನ್ನ ಮೆಮೊರಿ ಡೇಟಾಬೇಸ್‌ನಲ್ಲಿ ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಿಸಲಾಗಿದೆ!"
+        };
+
+        // API Endpoint paths
+        const API_URL = ""; // Relative url for FastAPI proxy
+
+        // Generate a unique session root ID
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // Initialize background canvas animation
+        function initCanvasAnimation() {
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+            
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+            
+            const particles = [];
+            const particleCount = 65;
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    radius: Math.random() * 2 + 1,
+                    speedX: Math.random() * 0.4 - 0.2,
+                    speedY: Math.random() * -0.5 - 0.1, // Floating upwards slowly
+                    color: Math.random() > 0.45 ? 'rgba(76, 175, 80, 0.25)' : 'rgba(255, 215, 0, 0.2)', // Green or Gold
+                });
+            }
+            
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                
+                particles.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = p.color;
+                    ctx.fill();
+                    
+                    // Move
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    
+                    // Boundary wrap
+                    if (p.y < 0) {
+                        p.y = height;
+                        p.x = Math.random() * width;
+                    }
+                    if (p.x < 0 || p.x > width) {
+                        p.speedX *= -1;
+                    }
+                });
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+        }
+
+        // Initialize Cursor Glow spotlight
+        function initCursorGlow() {
+            const glow = document.getElementById('cursor-glow');
+            document.addEventListener('mousemove', (e) => {
+                glow.style.left = e.clientX + 'px';
+                glow.style.top = e.clientY + 'px';
+            });
+        }
+
+        // Initialize Landing Parallax effect
+        function initLandingParallax() {
+            const bg = document.getElementById('parallax-bg');
+            if (!bg) return;
+            document.addEventListener('mousemove', (e) => {
+                const x = (e.clientX - window.innerWidth / 2) / 25;
+                const y = (e.clientY - window.innerHeight / 2) / 25;
+                bg.style.transform = `translate(${-x}px, ${-y}px) scale(1.08)`;
+            });
+        }
+
+        // Switch languages dynamically
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Toggle active button in both switcher bars
+            const allButtons = document.querySelectorAll('.lang-btn, .landing-lang-btn');
+            allButtons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${lang}'`)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Translate texts
+            const textKeys = LOCAL_UI_TEXTS[lang];
+            document.getElementById('lbl-welcome').innerText = textKeys.welcome;
+            document.getElementById('lbl-subwelcome').innerText = textKeys.subwelcome;
+            document.getElementById('lbl-profile-details').innerText = textKeys.lblProfile;
+            document.getElementById('lbl-farmer-name').innerText = textKeys.lblName;
+            document.getElementById('lbl-farmer-loc').innerText = textKeys.lblLoc;
+            document.getElementById('lbl-farmer-land').innerText = textKeys.lblLand;
+            document.getElementById('lbl-farmer-crops').innerText = textKeys.lblCrops;
+            document.getElementById('btn-edit-profile-text').innerHTML = `<i class="fa-solid fa-user-pen"></i> ` + textKeys.btnEdit;
+            document.getElementById('lbl-edit-title').innerText = textKeys.editTitle;
+            document.getElementById('btn-save-profile-text').innerText = textKeys.saveDetails;
+            document.getElementById('user-input-box').placeholder = textKeys.placeholderQuery;
+            
+            // Translate label forms
+            document.getElementById('lbl-form-name').innerText = textKeys.lblName;
+            document.getElementById('lbl-form-loc').innerText = textKeys.lblLoc;
+            document.getElementById('lbl-form-land').innerText = textKeys.lblLand + " (Acres)";
+            document.getElementById('lbl-form-crops').innerText = textKeys.lblCrops + " (comma separated)";
+
+            // Translate Landing elements
+            document.getElementById('lbl-landing-title').innerText = textKeys.landingTitle;
+            document.getElementById('lbl-landing-subtitle').innerText = textKeys.landingSubtitle;
+            document.getElementById('lbl-login-name').innerText = textKeys.lblLoginName;
+            document.getElementById('lbl-login-loc').innerText = textKeys.lblLoginLoc;
+            document.getElementById('btn-login-submit').innerText = textKeys.btnLoginSubmit;
+            document.getElementById('login-name-input').placeholder = textKeys.namePlaceholder;
+            document.getElementById('login-loc-input').placeholder = textKeys.locPlaceholder;
+
+            // Translate tab titles
+            document.getElementById('lbl-tab-weather').innerText = textKeys.tabWeather;
+            document.getElementById('lbl-tab-mandi').innerText = textKeys.tabMandi;
+            document.getElementById('lbl-tab-disease').innerText = textKeys.tabDisease;
+            document.getElementById('lbl-tab-general').innerText = textKeys.tabGeneral;
+            document.getElementById('lbl-history-title').innerText = textKeys.savedChats;
+
+            // If the chat for each tab is empty or only has the initial greeting, refresh it to the new language greeting
+            for (const key of Object.keys(tabChats)) {
+                if (tabChats[key].length === 0 || (tabChats[key].length === 1 && tabChats[key][0].senderType === 'agent')) {
+                    tabChats[key] = []; // Clear so switchTab will regenerate in new language
+                }
+            }
+            
+            // Re-render current active tab contents
+            switchTab(activeTab);
+            renderHistoryList();
+        }
+
+        // Handle Login Submission
+        async function handleLoginSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('login-name-input').value.trim();
+            const location = document.getElementById('login-loc-input').value.trim();
+            
+            if (!name || !location) return;
+            
+            // Save profile details to backend
+            try {
+                const response = await fetch(`${API_URL}/api/profile`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        location: location,
+                        land_size_acres: null,
+                        crop_history: null
+                    })
+                });
+                
+                const res = await response.json();
+                if (res.success) {
+                    await loadFarmerProfile();
+                }
+            } catch (err) {
+                console.error("Failed to pre-save profile", err);
+            }
+            
+            // Trigger smooth transition
+            document.getElementById('landing-page').classList.add('fade-out');
+            document.getElementById('app-dashboard').classList.add('visible');
+            
+            // Switch to weather tab initially
+            switchTab('weather');
+        }
+
+        // Switch Active Chat Tabs
+        function switchTab(tabKey) {
+            activeTab = tabKey;
+            
+            // Update UI active state of tabs
+            const tabs = document.querySelectorAll('.sidebar-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            document.getElementById(`tab-${tabKey}`).classList.add('active');
+            
+            // Clear message stream
+            const chatStream = document.getElementById('chat-messages');
+            chatStream.innerHTML = "";
+            
+            // Load messages for the tab
+            const history = tabChats[tabKey];
+            if (history.length === 0) {
+                // Prepopulate greeting
+                const greeting = TAB_GREETINGS[currentLanguage][tabKey];
+                let agentKey = "OrchestratorAgent";
+                if (tabKey === 'weather') agentKey = "WeatherAgent";
+                else if (tabKey === 'mandi') agentKey = "MarketPriceAgent";
+                else if (tabKey === 'disease') agentKey = "PestAndDiseaseAgent";
+                
+                const meta = AGENT_META[agentKey] || { avatar: "👑" };
+                appendMessage(agentKey, meta.avatar, greeting, "agent", null, false);
+            } else {
+                history.forEach(msg => {
+                    appendMessage(msg.agentKey, msg.avatar, msg.content, msg.senderType, msg.attachedImage, false);
+                });
+            }
+        }
+
+        // Modal triggers
+        function openProfileModal() {
+            document.getElementById('profile-modal').style.display = 'flex';
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profile-modal').style.display = 'none';
+        }
+
+        // Load profile from FastAPI backend
+        async function loadFarmerProfile() {
+            try {
+                const response = await fetch(`${API_URL}/api/profile`);
+                const profile = await response.json();
+                
+                // Update UI fields
+                document.getElementById('val-farmer-name').innerText = profile.name || "Not Specified";
+                document.getElementById('val-farmer-loc').innerText = profile.location || "Not Specified";
+                document.getElementById('val-farmer-land').innerText = profile.land_size_acres ? `${profile.land_size_acres} Acres` : "Not Specified";
+                
+                // Crop History badges
+                const cropsContainer = document.getElementById('val-farmer-crops');
+                cropsContainer.innerHTML = "";
+                if (profile.crop_history && profile.crop_history.length > 0) {
+                    profile.crop_history.forEach(crop => {
+                        const badge = document.createElement('span');
+                        badge.className = 'crop-badge';
+                        badge.innerText = crop;
+                        cropsContainer.appendChild(badge);
+                    });
+                } else {
+                    cropsContainer.innerText = "Not Specified";
+                }
+                
+                // Fill modal form inputs
+                document.getElementById('form-name-input').value = profile.name || "";
+                document.getElementById('form-loc-input').value = profile.location || "";
+                document.getElementById('form-land-input').value = profile.land_size_acres || "";
+                document.getElementById('form-crops-input').value = profile.crop_history ? profile.crop_history.join(", ") : "";
+                
+            } catch (err) {
+                console.error("Failed to load profile", err);
+            }
+        }
+
+        // Submit modified profile
+        async function submitProfileDetails() {
+            const name = document.getElementById('form-name-input').value;
+            const location = document.getElementById('form-loc-input').value;
+            const land = document.getElementById('form-land-input').value;
+            const cropsStr = document.getElementById('form-crops-input').value;
+            
+            const cropHistory = cropsStr.split(",").map(c => c.trim()).filter(c => c.length > 0);
+            
+            try {
+                const response = await fetch(`${API_URL}/api/profile`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name || null,
+                        location: location || null,
+                        land_size_acres: land ? parseFloat(land) : null,
+                        crop_history: cropHistory.length > 0 ? cropHistory : null
+                    })
+                });
+                
+                const res = await response.json();
+                if (res.success) {
+                    closeProfileModal();
+                    await loadFarmerProfile();
+                    
+                    // Show translated profile update confirmation in chat
+                    const notifyMsg = PROFILE_UPDATE_MSG[currentLanguage];
+                    appendMessage("FarmerMemoryAgent", AGENT_META["FarmerMemoryAgent"].avatar, notifyMsg, "agent");
+                }
+            } catch (err) {
+                alert("Failed to save profile: " + err);
+            }
+        }
+
+        // Advanced local Markdown Parser
+        function renderMarkdown(text) {
+            if (!text) return "";
+            
+            // Escape HTML to prevent raw injection crashes
+            let html = text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+            
+            // Render bold **text**
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Render horizontal lines (---)
+            html = html.replace(/^---\s*$/gm, '<hr>');
+            
+            // Render headings: #### heading, ### heading, ## heading, # heading
+            html = html.replace(/^####\s+(.*?)$/gm, '<h4>$1</h4>');
+            html = html.replace(/^###\s+(.*?)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^##\s+(.*?)$/gm, '<h2>$1</h2>');
+            html = html.replace(/^#\s+(.*?)$/gm, '<h1>$1</h1>');
+            
+            // Render bullet points starting with * or -
+            let lines = html.split('\n');
+            let inList = false;
+            let processedLines = [];
+            
+            for (let line of lines) {
+                let trimLine = line.trim();
+                let isBullet = trimLine.startsWith('* ') || trimLine.startsWith('- ') || trimLine.startsWith('• ');
+                
+                if (isBullet) {
+                    if (!inList) {
+                        inList = true;
+                        processedLines.push('<ul>');
+                    }
+                    let content = trimLine.replace(/^[\*\-•]\s+/, '');
+                    processedLines.push(`<li>${content}</li>`);
+                } else {
+                    if (inList) {
+                        inList = false;
+                        processedLines.push('</ul>');
+                    }
+                    processedLines.push(line);
+                }
+            }
+            if (inList) {
+                processedLines.push('</ul>');
+            }
+            html = processedLines.join('\n');
+
+            // Render Markdown tables
+            if (html.includes('|')) {
+                const tableLines = html.split('\n');
+                let tableMode = false;
+                let tableHtml = "";
+                let remainingText = "";
+                
+                for (let line of tableLines) {
+                    if (line.trim().startsWith('|')) {
+                        if (!tableMode) {
+                            tableMode = true;
+                            tableHtml += "<table>";
+                        }
+                        const cells = line.split('|').map(c => c.trim()).filter((c, idx, arr) => idx > 0 && idx < arr.length - 1);
+                        
+                        if (line.includes('---')) {
+                            continue;
+                        }
+                        
+                        tableHtml += "<tr>";
+                        cells.forEach(cell => {
+                            if (tableHtml.match(/<tr>/g).length === 1) {
+                                tableHtml += `<th>${cell}</th>`;
+                            } else {
+                                tableHtml += `<td>${cell}</td>`;
+                            }
+                        });
+                        tableHtml += "</tr>";
+                    } else {
+                        if (tableMode) {
+                            tableMode = false;
+                            tableHtml += "</table>";
+                            remainingText += tableHtml;
+                            tableHtml = "";
+                        }
+                        remainingText += line + "\n";
+                    }
+                }
+                if (tableMode) {
+                    tableHtml += "</table>";
+                    remainingText += tableHtml;
+                }
+                html = remainingText;
+            }
+            
+            // Segment into paragraphs by double newlines (\n\s*\n)
+            let paragraphs = html.split(/\n\s*\n/);
+            let paraHtml = paragraphs.map(p => {
+                let trimmed = p.trim();
+                if (!trimmed) return "";
+                // If it starts with a structural block, do not wrap in <p>
+                if (trimmed.startsWith('<h1>') || trimmed.startsWith('<h2>') || trimmed.startsWith('<h3>') || trimmed.startsWith('<h4>') || trimmed.startsWith('<ul>') || trimmed.startsWith('<table>') || trimmed.startsWith('<hr>')) {
+                    return trimmed.replace(/\n/g, '<br>');
+                }
+                // Wrap standard text block in <p>, replacing inner single newlines with <br>
+                return `<p>${trimmed.replace(/\n/g, '<br>')}</p>`;
+            }).filter(p => p !== "").join('');
+            
+            html = paraHtml;
+            
+            // Clean up consecutive double breaks inside list/table/headings elements
+            html = html.replace(/<\/ul><br>/g, '</ul>');
+            html = html.replace(/<\/h4><br>/g, '</h4>');
+            html = html.replace(/<\/h3><br>/g, '</h3>');
+            html = html.replace(/<\/h2><br>/g, '</h2>');
+            html = html.replace(/<\/h1><br>/g, '</h1>');
+            html = html.replace(/<\/table><br>/g, '</table>');
+            html = html.replace(/<hr><br>/g, '<hr>');
+            
+            return html;
+        }
+
+        // Save conversation history states
+        function loadSavedChatsFromStorage() {
+            try {
+                const stored = localStorage.getItem('krishnamitra_chats');
+                savedConversations = stored ? JSON.parse(stored) : [];
+            } catch (err) {
+                console.error("Failed to load past chats from storage", err);
+                savedConversations = [];
+            }
+            renderHistoryList();
+        }
+
+        function saveChatsToStorage() {
+            try {
+                localStorage.setItem('krishnamitra_chats', JSON.stringify(savedConversations));
+            } catch (err) {
+                console.error("Failed to save chats to storage", err);
+            }
+        }
+
+        function saveCurrentChatToHistory() {
+            let firstUserMsg = "";
+            let totalMsgs = 0;
+            
+            for (const key of Object.keys(tabChats)) {
+                tabChats[key].forEach(m => {
+                    totalMsgs++;
+                    if (m.senderType === 'user' && !firstUserMsg) {
+                        firstUserMsg = m.content;
+                    }
+                });
+            }
+            
+            // Don't save if it's practically empty (only has standard tab greetings)
+            if (totalMsgs <= 4 && !firstUserMsg) return;
+            
+            const existingIdx = savedConversations.findIndex(c => c.id === rootSessionId);
+            
+            // Format title
+            let cleanTitle = firstUserMsg;
+            if (cleanTitle.startsWith("[")) {
+                // Strip bracket categories like [Weather and Irrigation Category]
+                cleanTitle = cleanTitle.replace(/^\[.*?\]\s*/, '');
+            }
+            const titleText = cleanTitle ? (cleanTitle.length > 25 ? cleanTitle.substring(0, 25) + "..." : cleanTitle) : "Farming Advisory";
+            const timestampText = new Date().toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' });
+            
+            if (existingIdx > -1) {
+                // Update conversation history contents in place
+                savedConversations[existingIdx].chats = JSON.parse(JSON.stringify(tabChats));
+            } else {
+                // Unshift to insert newest conversations at the top
+                savedConversations.unshift({
+                    id: rootSessionId,
+                    title: titleText,
+                    timestamp: timestampText,
+                    chats: JSON.parse(JSON.stringify(tabChats))
+                });
+            }
+            
+            saveChatsToStorage();
+            renderHistoryList();
+        }
+
+        function renderHistoryList() {
+            const listContainer = document.getElementById('chat-history-list');
+            if (!listContainer) return;
+            
+            listContainer.innerHTML = "";
+            
+            if (savedConversations.length === 0) {
+                listContainer.innerHTML = `<div class="history-empty">No saved chats yet</div>`;
+                return;
+            }
+            
+            savedConversations.forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                
+                // Highlight active session
+                if (c.id === rootSessionId) {
+                    item.style.borderColor = 'var(--primary)';
+                    item.style.background = 'rgba(76, 175, 80, 0.08)';
+                }
+                
+                item.onclick = () => loadSavedChat(c.id);
+                
+                item.innerHTML = `
+                    <div class="history-item-title">${c.title}</div>
+                    <div class="history-item-meta">
+                        <span><i class="fa-regular fa-clock"></i> ${c.timestamp}</span>
+                        <span style="color: var(--primary-light); font-weight:600;"><i class="fa-solid fa-chevron-right"></i></span>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        function loadSavedChat(chatId) {
+            // Auto save current chat before switching
+            saveCurrentChatToHistory();
+            
+            const chat = savedConversations.find(c => c.id === chatId);
+            if (!chat) return;
+            
+            rootSessionId = chat.id;
+            
+            // Restore tab states (deep copy)
+            for (const key of Object.keys(tabChats)) {
+                tabChats[key] = JSON.parse(JSON.stringify(chat.chats[key]));
+            }
+            
+            // Auto-detect and switch to the tab that contains user conversation
+            let bestTab = 'weather';
+            let maxUserMsgs = 0;
+            for (const key of Object.keys(tabChats)) {
+                let userMsgCount = tabChats[key].filter(m => m.senderType === 'user').length;
+                if (userMsgCount > maxUserMsgs) {
+                    maxUserMsgs = userMsgCount;
+                    bestTab = key;
+                }
+            }
+            activeTab = bestTab;
+            
+            switchTab(activeTab);
+            renderHistoryList();
+        }
+
+        function startNewChat() {
+            // Auto save current chat details
+            saveCurrentChatToHistory();
+            
+            // Start fresh session ID
+            rootSessionId = generateUUID();
+            for (const key of Object.keys(tabChats)) {
+                tabChats[key] = [];
+            }
+            
+            switchTab(activeTab);
+            renderHistoryList();
+        }
+
+        // Append a message bubble to the stream
+        function appendMessage(agentKey, avatar, content, senderType, attachedImage = null, addToHistory = true) {
+            const chatStream = document.getElementById('chat-messages');
+            
+            const row = document.createElement('div');
+            row.className = `message-row ${senderType}`;
+            
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'avatar';
+            avatarDiv.innerText = avatar;
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            
+            if (senderType === 'agent') {
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'agent-name';
+                
+                const meta = AGENT_META[agentKey] || { nameDisp: { english: agentKey } };
+                const dispName = meta.nameDisp[currentLanguage] || meta.nameDisp.english;
+                nameDiv.innerHTML = `<i class="fa-solid fa-robot"></i> ${dispName}`;
+                bubble.appendChild(nameDiv);
+            }
+            
+            const textSpan = document.createElement('span');
+            textSpan.className = 'typing-text';
+            bubble.appendChild(textSpan);
+            
+            // Add image or video preview thumbnail
+            if (attachedImage) {
+                if (attachedImage.startsWith("data:video")) {
+                    const videoIcon = document.createElement('div');
+                    videoIcon.style.margin = "10px 0";
+                    videoIcon.style.display = "flex";
+                    videoIcon.style.alignItems = "center";
+                    videoIcon.style.gap = "8px";
+                    videoIcon.style.padding = "10px";
+                    videoIcon.style.background = "rgba(0,0,0,0.2)";
+                    videoIcon.style.borderRadius = "8px";
+                    videoIcon.style.border = "1px solid rgba(255,255,255,0.1)";
+                    videoIcon.innerHTML = `<i class="fa-solid fa-file-video" style="font-size: 28px; color: var(--accent);"></i> <span style="font-size: 13px;">Crop Video Diagnostic Attachment</span>`;
+                    bubble.appendChild(videoIcon);
+                } else {
+                    const img = document.createElement('img');
+                    img.src = attachedImage;
+                    img.className = 'message-image';
+                    bubble.appendChild(img);
+                }
+            }
+            
+            row.appendChild(avatarDiv);
+            row.appendChild(bubble);
+            chatStream.appendChild(row);
+            
+            // Auto scroll
+            chatStream.scrollTop = chatStream.scrollHeight;
+            
+            // Add to in-memory active tab history
+            if (addToHistory) {
+                tabChats[activeTab].push({
+                    agentKey,
+                    avatar,
+                    content,
+                    senderType,
+                    attachedImage
+                });
+                
+                // Auto save current chat state to localStorage history
+                saveCurrentChatToHistory();
+            }
+            
+            // Render text
+            textSpan.innerHTML = renderMarkdown(content);
+        }
+
+        // Show typing dot indicator loading
+        function showTypingIndicator() {
+            const chatStream = document.getElementById('chat-messages');
+            
+            const row = document.createElement('div');
+            row.className = 'message-row agent';
+            row.id = 'typing-indicator-row';
+            
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'avatar';
+            avatarDiv.innerText = "👑";
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'agent-name';
+            nameDiv.innerHTML = `<i class="fa-solid fa-circle-nodes"></i> Routing query...`;
+            bubble.appendChild(nameDiv);
+            
+            const indicator = document.createElement('div');
+            indicator.className = 'typing-indicator';
+            indicator.innerHTML = `
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            `;
+            
+            bubble.appendChild(indicator);
+            row.appendChild(avatarDiv);
+            row.appendChild(bubble);
+            chatStream.appendChild(row);
+            
+            chatStream.scrollTop = chatStream.scrollHeight;
+        }
+
+        // Remove typing indicator
+        function removeTypingIndicator() {
+            const row = document.getElementById('typing-indicator-row');
+            if (row) row.remove();
+        }
+
+        // Handle sending user input
+        async function sendUserMessage() {
+            const inputBox = document.getElementById('user-input-box');
+            const queryText = inputBox.value.trim();
+            
+            if (!queryText) return;
+            
+            // Disable input field during execution
+            inputBox.value = "";
+            inputBox.disabled = true;
+            
+            // Append User Message to Stream
+            appendMessage("User", "👤", queryText, "user");
+            
+            // Show routing indicator
+            showTypingIndicator();
+            
+            // Inject tab category context to route the Orchestrator safely
+            let routedQuery = queryText;
+            if (activeTab === 'weather') {
+                routedQuery = `[Weather and Irrigation Category] ${queryText}`;
+            } else if (activeTab === 'mandi') {
+                routedQuery = `[Mandi Prices and Profits Category] ${queryText}`;
+            } else if (activeTab === 'disease') {
+                routedQuery = `[Crop Disease Analysis Category] ${queryText}`;
+            }
+            
+            const payload = {
+                query: routedQuery,
+                session_id: `${rootSessionId}_${activeTab}`, // Tab-specific isolated session ID!
+                language: currentLanguage
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/api/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    const errMsg = errData.detail || `Server returned error status ${response.status}`;
+                    throw new Error(errMsg);
+                }
+                
+                const data = await response.json();
+                
+                // Clear typing indicator
+                removeTypingIndicator();
+                
+                // Get meta for responding sub-agent
+                const agentKey = data.agent || "OrchestratorAgent";
+                const meta = AGENT_META[agentKey] || { avatar: "👑" };
+                
+                // Append response to chat stream
+                appendMessage(agentKey, meta.avatar, data.response, "agent");
+                
+                // Refresh profile in case it was updated during conversation
+                if (agentKey === "FarmerMemoryAgent") {
+                    await loadFarmerProfile();
+                }
+                
+            } catch (err) {
+                removeTypingIndicator();
+                appendMessage("OrchestratorAgent", "⚠️", "Error details: " + err.message, "agent");
+            } finally {
+                inputBox.disabled = false;
+                inputBox.focus();
+            }
+        }
+
+        function handleInputKeyDown(event) {
+            if (event.key === 'Enter') {
+                sendUserMessage();
+            }
+        }
+
+        // Web Speech API Voice input integration
+        let recognition = null;
+        let isRecording = false;
+
+        function showVoiceError(msg) {
+            const box = document.getElementById('voice-error-box');
+            if (box) {
+                box.innerText = msg;
+                box.style.display = 'block';
+                // Automatically hide error message after 6 seconds
+                setTimeout(() => {
+                    hideVoiceError();
+                }, 6000);
+            }
+        }
+
+        function hideVoiceError() {
+            const box = document.getElementById('voice-error-box');
+            if (box) {
+                box.style.display = 'none';
+            }
+        }
+
+        function initVoiceInput() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                console.warn("Speech recognition is not supported in this browser.");
+                showVoiceError("Speech recognition is not supported in your browser. Please use Google Chrome or Microsoft Edge.");
+                return;
+            }
+            
+            try {
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                
+                recognition.onstart = () => {
+                    isRecording = true;
+                    hideVoiceError();
+                    const voiceBtn = document.getElementById('btn-voice');
+                    voiceBtn.classList.add('recording');
+                    voiceBtn.title = "Recording... Click to stop";
+                };
+                
+                recognition.onend = () => {
+                    isRecording = false;
+                    const voiceBtn = document.getElementById('btn-voice');
+                    voiceBtn.classList.remove('recording');
+                    voiceBtn.title = "Voice input (Speak)";
+                };
+                
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    const inputBox = document.getElementById('user-input-box');
+                    inputBox.value = (inputBox.value + " " + transcript).trim();
+                };
+                
+                recognition.onerror = (event) => {
+                    console.error("Speech recognition error", event.error);
+                    isRecording = false;
+                    const voiceBtn = document.getElementById('btn-voice');
+                    voiceBtn.classList.remove('recording');
+                    
+                    let errorMsg = "Voice input error. Please try speaking again.";
+                    if (event.error === 'not-allowed') {
+                        errorMsg = "Microphone access denied. Please check your browser permission settings.";
+                    } else if (event.error === 'no-speech') {
+                        errorMsg = "No speech detected. Please speak clearly into the microphone.";
+                    } else if (event.error === 'network') {
+                        errorMsg = "Network error. Please check your internet connection.";
+                    }
+                    showVoiceError(errorMsg);
+                };
+            } catch (err) {
+                console.error("Failed to initialize speech recognition", err);
+                showVoiceError("Could not initialize voice input framework.");
+            }
+        }
+
+        function toggleVoiceInput() {
+            if (!recognition) {
+                initVoiceInput();
+            }
+            if (!recognition) {
+                showVoiceError("Speech recognition is not supported in this browser. Please use Google Chrome.");
+                return;
+            }
+            
+            if (isRecording) {
+                try {
+                    recognition.stop();
+                } catch (e) {
+                    console.error("Failed to stop recognition", e);
+                }
+            } else {
+                hideVoiceError();
+                if (currentLanguage === 'hindi') {
+                    recognition.lang = 'hi-IN';
+                } else if (currentLanguage === 'kannada') {
+                    recognition.lang = 'kn-IN';
+                } else {
+                    recognition.lang = 'en-IN';
+                }
+                
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.error("Failed to start recognition", e);
+                    showVoiceError("Failed to start voice input. Please try again.");
+                }
+            }
+        }
+
+        // Initial setup on window load
+        window.onload = async () => {
+            rootSessionId = generateUUID();
+            initCanvasAnimation();
+            initCursorGlow();
+            initLandingParallax();
+            
+            // Set initial language layout
+            setLanguage('english');
+            
+            // Load farmer profile if existing
+            await loadFarmerProfile();
+            
+            // Load saved conversation history
+            loadSavedChatsFromStorage();
+        };
+    </script>
+</body>
+</html>

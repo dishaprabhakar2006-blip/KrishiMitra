@@ -1,0 +1,52 @@
+=== CROPS AND SOWING REQUIREMENTS ===
+
+[Crop: Soybean]
+Soybean is a primary monsoon (Kharif) crop in Central India, particularly Madhya Pradesh and Maharashtra (Latur, Ujjain, Kota). It grows best in well-drained clayey or black soil. Sowing should start in June-July with the onset of monsoon. Seed rate: 25-30 kg per acre. Spacing: 45 cm row-to-row, 5 cm plant-to-plant. Sowing depth: 2-3 cm. NPK fertilizer requirement is 20 kg Nitrogen (N), 60 kg Phosphorus (P2O5), and 20 kg Potassium (K2O) per acre. It fixes nitrogen in the soil, making it excellent for crop rotation after heavy feeders like wheat.
+
+[Crop: Paddy / Rice]
+Paddy is a high-water-requirement Kharif crop grown extensively in Punjab, West Bengal, Andhra Pradesh (Nellore), and Telangana (Warangal). It grows best in clayey loam or alluvial soils which can retain water. Sowing/transplanting is done in June-July. Seed rate for transplanting: 8-10 kg per acre in nursery. Sowing depth: 2-3 cm. Water requirement is very high; fields must remain flooded. NPK requirement is 40 kg Nitrogen (N), 20 kg Phosphorus (P2O5), and 20 kg Potassium (K2O) per acre. It is a heavy feeder that depletes soil nutrients.
+
+[Crop: Wheat]
+Wheat is a primary winter (Rabi) crop grown in Northern and Central India (Punjab, Haryana, Madhya Pradesh, Uttar Pradesh). It grows best in fertile alluvial or clayey loam soils. Sowing is done in November-December. Seed rate: 40-45 kg per acre. Spacing: 22.5 cm row-to-row. Sowing depth: 4-5 cm. NPK fertilizer requirement is 50 kg Nitrogen (N), 25 kg Phosphorus (P2O5), and 17 kg Potassium (K2O) per acre. It requires cool temperatures during growth and dry, warm weather during harvesting.
+
+[Crop: Cotton]
+Cotton is a cash crop grown in Gujarat (Rajkot), Maharashtra (Yavatmal), and Telangana. It requires deep black soil (regur soil) which has high moisture retention. Sowing is done in May-June. Seed rate for Bt Cotton: 1.5-2 kg per acre. Spacing: 60 cm x 60 cm or 90 cm x 60 cm. Sowing depth: 3-4 cm. NPK requirement is 50 kg Nitrogen (N), 25 kg Phosphorus (P2O5), and 25 kg Potassium (K2O) per acre. It is highly susceptible to pests like bollworms and requires dry weather during boll opening.
+
+[Crop: Pearl Millet / Bajra]
+Bajra is a highly drought-resistant crop grown in arid regions like Rajasthan (Kota), Gujarat, and Haryana. It grows best in sandy loam or light-textured soils. Sowing is done in June-July. Seed rate: 1.5-2 kg per acre. Spacing: 45 cm x 15 cm. Sowing depth: 2-3 cm. NPK requirement is 30 kg Nitrogen (N), 15 kg Phosphorus (P2O5), and 15 kg Potassium (K2O) per acre. It requires minimal water and is highly tolerant of heat and dry conditions.
+
+
+=== CROP DISEASES AND PLANT PATHOLOGY ===
+
+[Disease: Tomato Early Blight]
+Tomato Early Blight is a common fungal disease caused by Alternaria solani. Symptoms: Dark spots with concentric rings (target-like pattern) appearing first on older leaves, leading to leaf yellowing and defoliation. Remedies: Spray copper-based fungicides (e.g. Copper Oxychloride 3g/L) or Mancozeb (2g/L). Organic remedy: Apply Neem Oil spray (5ml/L) and remove affected lower leaves to improve air circulation. Keep foliage dry by watering at the base.
+
+[Disease: Tomato Late Blight]
+Tomato and Potato Late Blight is a devastating oomycete disease caused by Phytophthora infestans. Symptoms: Rapidly enlarging water-soaked lesions on leaves and stems, turning dark brown/black. A white fuzzy mold appears on the underside of leaves in humid conditions. Remedies: Apply systemic fungicides like Metalaxyl-Mancozeb (2.5g/L) or spray Cymoxanil-Mancozeb. Avoid overhead irrigation and ensure proper spacing for ventilation.
+
+[Disease: Paddy Blast]
+Paddy Blast is a serious fungal disease caused by Magnaporthe oryzae. Symptoms: Spindle-shaped (diamond-shaped) lesions with grey centers and brown borders on leaves. If it infects the neck, it causes neck rot, resulting in empty panicles. Remedies: Seed treatment with Tricyclazole (2g/kg seed) or spraying Tricyclazole (0.6g/L) or Isoprothiolane. Avoid excessive Nitrogen fertilizers which promote dense foliage and disease spread.
+
+
+=== SOIL TYPES AND REGIONAL SUITABILITY ===
+
+[Soil: Black Soil / Regur]
+Black soil (Regur) dominates the Deccan plateau, covering Maharashtra, Madhya Pradesh, Gujarat, and parts of Andhra Pradesh. It is highly clayey, deep, and has excellent moisture retention capacity. It is rich in iron, lime, calcium, and potash, but poor in phosphorus and nitrogen. It is ideal for growing Cotton, Soybean, Sugarcane, and Groundnut.
+
+[Soil: Alluvial Soil]
+Alluvial soil is the most fertile and widespread soil type in India, found in the Indo-Gangetic plains (Punjab, Haryana, Uttar Pradesh, Bihar, West Bengal). It is rich in potash and lime but deficient in nitrogen and phosphorus. It has a loamy to clayey texture, providing good drainage and nutrient retention. It is perfect for Wheat, Paddy, Sugarcane, Mustard, and Pulses.
+
+
+=== GOVERNMENT SCHEMES AND SUBSIDIES ===
+
+[Scheme: PM-KISAN]
+Pradhan Mantri Kisan Samman Nidhi (PM-KISAN) is a central sector scheme providing income support of INR 6,000 per year to all landholding farmer families across India. The financial support is transferred directly into the bank accounts of farmers in three equal installments of INR 2,000 every four months. Eligibility: All landholder farmer families having cultivable landholding in their names are eligible. Exclusion criteria apply to institutional landholders, professionals, and income tax payers.
+
+[Scheme: PMFBY / Crop Insurance]
+Pradhan Mantri Fasal Bima Yojana (PMFBY) is the national crop insurance scheme providing comprehensive coverage against crop failure due to natural calamities, pests, or diseases. Premium rates: Farmers pay a low premium of 2.0% for all Kharif crops, 1.5% for all Rabi crops, and 5.0% for annual commercial/horticultural crops. The remaining premium is subsidized equally by the Central and State Governments. Claims are settled based on crop cutting experiments (CCE) and weather index data.
+
+[Scheme: Kisan Credit Card / KCC]
+The Kisan Credit Card (KCC) scheme provides farmers with timely and hassle-free short-term credit (loans) for crop cultivation, post-harvest expenses, and agricultural maintenance. Features: Loans up to INR 3 Lakhs are provided at a low interest rate of 7%, which can be reduced to 4% upon prompt repayment (due to 3% prompt interest subvention). It covers cultivation costs, crop insurance premium, and household consumption needs. Available to all farmers, tenant farmers, and sharecroppers.
+
+[Scheme: Soil Health Card]
+The Soil Health Card Scheme assists farmers in knowing the nutrient status of their soil and recommends appropriate dosage of fertilizers (like Nitrogen, Phosphorus, Potassium, and micronutrients). Issued once every 2 years, the card lists 12 parameters (macro, secondary, and micro nutrients, plus pH and EC) and provides a customized fertilizer advisory to reduce cultivation costs and prevent soil degradation.

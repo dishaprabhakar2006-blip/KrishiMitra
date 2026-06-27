@@ -1,0 +1,10 @@
+google-adk
+fastapi
+uvicorn
+python-dotenv
+httpx
+pydantic
+google-generativeai
+mistralai
+# RAG Retriever is implemented in pure Python (no external dependencies required)
+
