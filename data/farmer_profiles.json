@@ -2,19 +2,11 @@
     "default_farmer": {
         "user_id": "default_farmer",
         "name": "Ramu",
-        "location": "Pune,Maharashtra",
-        "land_size_acres": 0.0,
-        "crop_history": [
-            "wheat",
-            "tomato",
-            "rice"
-        ],
         "name_en": "Ramu",
+        "location": "Pune,Maharashtra",
         "location_en": "Pune,Maharashtra",
-        "crop_history_en": [
-            "wheat",
-            "tomato",
-            "rice"
-        ]
+        "land_size_acres": 0.0,
+        "crop_history": [],
+        "crop_history_en": []
     }
 }

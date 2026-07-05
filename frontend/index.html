@@ -1535,7 +1535,14 @@
             
             if (!name || !location) return;
             
-            // Save profile details to backend
+            // Trigger smooth transition instantly for responsive UX!
+            document.getElementById('landing-page').classList.add('fade-out');
+            document.getElementById('app-dashboard').classList.add('visible');
+            
+            // Switch to weather tab initially
+            switchTab('weather');
+            
+            // Save profile details to backend in the background
             try {
                 const response = await fetch(`${API_URL}/api/profile?lang=${currentLanguage}`, {
                     method: 'POST',
@@ -1557,13 +1564,6 @@
             } catch (err) {
                 console.error("Failed to pre-save profile", err);
             }
-            
-            // Trigger smooth transition
-            document.getElementById('landing-page').classList.add('fade-out');
-            document.getElementById('app-dashboard').classList.add('visible');
-            
-            // Switch to weather tab initially
-            switchTab('weather');
         }
 
         // Switch Active Chat Tabs
