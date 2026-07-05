@@ -1,16 +1,16 @@
 {
     "default_farmer": {
         "user_id": "default_farmer",
-        "name": "Ramesh",
-        "location": "bengalore,karnataka",
+        "name": "Ramu",
+        "location": "Pune,Maharashtra",
         "land_size_acres": 0.0,
         "crop_history": [
             "wheat",
             "tomato",
             "rice"
         ],
-        "name_en": "Ramesh",
-        "location_en": "Bangalore, Karnataka",
+        "name_en": "Ramu",
+        "location_en": "Pune,Maharashtra",
         "crop_history_en": [
             "wheat",
             "tomato",

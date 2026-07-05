@@ -204,6 +204,8 @@ class MistralLlm(BaseLlm):
         
         for attempt in range(max_retries + 1):
             try:
+                # Respect the 1 request/second rate limit of the Mistral Free Tier
+                await asyncio.sleep(1.5)
                 async with httpx.AsyncClient(timeout=30.0) as client:
                     response = await client.post(
                         "https://api.mistral.ai/v1/chat/completions",
