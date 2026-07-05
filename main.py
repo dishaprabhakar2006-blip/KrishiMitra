@@ -23,6 +23,7 @@ from agents.orchestrator_agent import (
     translate_from_english
 )
 from agents.memory_agent import get_farmer_profile, update_farmer_profile
+from tools.mistral_llm import active_language
 
 app = FastAPI(title="KrishiMitra Backend API")
 
@@ -64,13 +65,15 @@ def serve_frontend():
     return {"message": "KrishiMitra Backend is running. Frontend file index.html is missing."}
 
 @app.get("/api/profile")
-def get_profile(user_id: str = "default_farmer"):
+def get_profile(user_id: str = "default_farmer", lang: Optional[str] = None):
     """Fetches the registered farmer profile details."""
+    active_language.set(lang or "english")
     return get_farmer_profile(user_id)
 
 @app.post("/api/profile")
-def update_profile(req: ProfileUpdateRequest, user_id: str = "default_farmer"):
+def update_profile(req: ProfileUpdateRequest, user_id: str = "default_farmer", lang: Optional[str] = None):
     """Updates the farmer profile details."""
+    active_language.set(lang or "english")
     res = update_farmer_profile(
         name=req.name,
         location=req.location,
@@ -94,6 +97,8 @@ async def chat_endpoint(req: ChatRequest):
         # Detect language using Gemini translation helper
         user_lang = detect_language(req.query)
         
+    active_language.set(user_lang or "english")
+    
     # 2. Translate text query to English if needed
     english_query = req.query
     if user_lang in ["hindi", "kannada"]:
@@ -130,15 +135,10 @@ async def chat_endpoint(req: ChatRequest):
     if not response_english:
         response_english = "I apologize, but I could not formulate a response. Please try again."
         
-    # 5. Translate English response back to original user language
-    final_response = response_english
-    if user_lang in ["hindi", "kannada"]:
-        final_response = translate_from_english(response_english, user_lang)
-        
     # Return formatted JSON response
     return {
         "session_id": session_id,
-        "response": final_response,
+        "response": response_english,
         "original_response": response_english,
         "agent": responding_agent,
         "language": user_lang

@@ -1536,7 +1536,7 @@
             
             // Save profile details to backend
             try {
-                const response = await fetch(`${API_URL}/api/profile`, {
+                const response = await fetch(`${API_URL}/api/profile?lang=${currentLanguage}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1609,7 +1609,7 @@
         // Load profile from FastAPI backend
         async function loadFarmerProfile() {
             try {
-                const response = await fetch(`${API_URL}/api/profile`);
+                const response = await fetch(`${API_URL}/api/profile?lang=${currentLanguage}`);
                 const profile = await response.json();
                 
                 // Update UI fields
@@ -1652,7 +1652,7 @@
             const cropHistory = cropsStr.split(",").map(c => c.trim()).filter(c => c.length > 0);
             
             try {
-                const response = await fetch(`${API_URL}/api/profile`, {
+                const response = await fetch(`${API_URL}/api/profile?lang=${currentLanguage}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

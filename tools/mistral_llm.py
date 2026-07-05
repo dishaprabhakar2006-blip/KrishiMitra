@@ -9,7 +9,9 @@ from google.adk.models.llm_request import LlmRequest
 from google.adk.models.llm_response import LlmResponse
 from pydantic import Field
 
+from contextvars import ContextVar
 logger = logging.getLogger("krishnamitra.mistral_llm")
+active_language = ContextVar("active_language", default="english")
 
 def _clean_schema(d: Any) -> Any:
     """Recursively clean schema dict to remove None values and serialize Enums/Pydantic types."""
@@ -92,6 +94,12 @@ class MistralLlm(BaseLlm):
                         # Fail silently in production, log for debug
                         with open("mistral_debug.log", "a", encoding="utf-8") as f_debug:
                             f_debug.write(f"RAG retrieval error: {str(e)}\n")
+            
+            # Inject active language instruction
+            lang = active_language.get("english")
+            if lang and lang != "english":
+                lang_instruction = f"\n\nIMPORTANT: Always respond in {lang}. If language is Kannada, respond in ಕನ್ನಡ. If Hindi, respond in हिंदी. Never respond in English when another language is selected.\n"
+                sys_text += lang_instruction
             
             if sys_text:
                 messages.append({"role": "system", "content": sys_text})
